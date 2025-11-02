@@ -46,7 +46,7 @@ h1 {
   flex-direction: column;
   gap: 10px;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 8px; /* reduced from 20px to bring button closer to the gallery */
   padding: 0 20px;
 }
 
@@ -64,14 +64,23 @@ button {
   width: 100%;
 }
 
-/* Button specific */
+/* Button specific — updated to a dark navy (NASA-like) */
 button {
-  background-color: #d3d3d3;
-  color: black;
+  background-color: #0b2545; /* dark navy */
+  color: #ffffff;            /* readable on dark background */
+  border: 1px solid rgba(255,255,255,0.08);
   cursor: pointer;
+  transition: background-color 150ms ease, transform 150ms ease;
+  padding: 10px 18px;
 }
+
 button:hover {
-  background-color: #bfbfbf;
+  background-color: #0e3568; /* slightly lighter navy on hover */
+}
+
+button:focus {
+  outline: 3px solid rgba(11,37,69,0.25);
+  outline-offset: 2px;
 }
 
 /* Stack horizontally on wider screens */
@@ -87,13 +96,11 @@ button:hover {
   }
 }
 
-/* Gallery flex container */
+/* Gallery container
+   Use block layout so the inner .cards grid can control columns reliably. */
 .gallery {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 20px;
-  justify-content: center;
+  display: block; /* changed from flex to block so .cards grid works properly */
+  padding: 8px 20px; /* reduced top padding to tighten the gap */
 }
 
 /* Gallery items */
@@ -130,15 +137,179 @@ button:hover {
   font-size: 14px;
 }
 
-/* Placeholder content */
-.placeholder {
-  flex: 1 1 100%;
-  text-align: center;
-  padding: 40px;
-  color: #666;
+/* Simple grid for cards */
+.cards {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem 0;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto; /* center the grid */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* responsive fallback */
 }
 
-.placeholder-icon {
-  font-size: 48px;
-  margin-bottom: 20px;
+/* Force a 3-column layout on wider screens so 9 items appear as 3x3 */
+@media (min-width: 900px) {
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card {
+  background: #0b2545; /* dark blue to feel NASA-like */
+  color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  flex: none;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:focus,
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  outline: none;
+}
+
+.card .media img {
+  display: block;
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  /* Hover zoom: smooth transform for a subtle scale effect */
+  transition: transform 250ms cubic-bezier(.2,.8,.2,1);
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* Scale the image slightly when the card is hovered or focused */
+.card:hover .media img,
+.card:focus .media img {
+  transform: scale(1.06);
+}
+
+.card-body {
+  padding: 0.75rem;
+}
+
+.card-title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+}
+
+.card-date {
+  color: #cfe8ff;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Modal styles */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.open {
+  display: flex;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+}
+
+.modal-content {
+  position: relative;
+  background: #07142a;
+  color: #fff;
+  max-width: 900px;
+  width: 95%;
+  border-radius: 8px;
+  z-index: 2;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.modal-close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.modal-media {
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-media img {
+  width: 100%;
+  height: auto;
+  max-height: 60vh;
+  object-fit: contain;
+  display: block;
+}
+
+/* Make embedded iframes match the modal image sizing and be responsive */
+.modal-media iframe,
+.modal-media img {
+  width: 100%;
+  max-height: 60vh;        /* same constraint as modal images */
+  aspect-ratio: 16/9;      /* keeps embedded video at a natural 16:9 ratio */
+  object-fit: contain;
+  border: 0;
+}
+
+/* Optional wrapper to center fixed-aspect embeds */
+.video-embed-wrap {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.modal-meta {
+  padding: 1rem;
+  overflow: auto;
+}
+
+/* Prevent body scroll when modal open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Loading / placeholder */
+.placeholder {
+  padding: 1rem; /* compact padding */
+  text-align: center;
+  color: #000;
+}
+
+/* Random fact — centered and constrained */
+.random-fact {
+  text-align: center;
+  max-width: 900px;
+  margin: 1.5rem auto 0.75rem; /* add top spacing so it's nicely separated from the button */
+  padding: 0.5rem 1rem;
+  color: #07142a;
+  background: rgba(11,37,69,0.05);
+  border-radius: 6px;
+  font-weight: 500;
 }
